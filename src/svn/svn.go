@@ -11,6 +11,26 @@ type Svn struct {
 	blocked bool
 }
 
+func (s *Svn) getHookScriptResult(hookname string) (string) {
+	val, _ := s.Config.String("CMD", hookname)
+
+	if val + "FOOBAR" == "FOOBAR" {
+		return ""
+	}
+
+	workdir, _ := s.Config.String("SVN", "checkout")
+	cmd := exec.Command(val)
+	cmd.Dir = workdir
+
+	out, err := cmd.CombinedOutput()
+
+	if err != nil {
+		return string(err.Error())
+	}
+
+	return string(out)
+}
+
 func (s *Svn) getBinPath() (string) {
 	val,_ := s.Config.String("SVN", "binpath")
 	return val
@@ -43,45 +63,119 @@ func (s *Svn) SvnRemoteInfo() (*exec.Cmd) {
 	return cmd
 }
 
-func (s *Svn) UpdateWorkingCopy() (*exec.Cmd) {
+func (s *Svn) UpdateWorkingCopy() (string) {
+
 	if s.shouldAlwaysRevert() {
 		s.revertWorkingCopy()
 	}
+
+	preOut := s.getHookScriptResult("pre_up")
 
 	cmd := exec.Command(s.getBinPath(), "up")
 	cmd.Dir = s.getCheckoutPath()
-	return cmd
+
+	log.Print("Updating working copy")
+	out, oerr := cmd.CombinedOutput()
+	log.Print("Finished execution")
+
+	if oerr != nil {
+		log.Print("ERROR:")
+		log.Panic(oerr)
+	}
+
+	postOut := ""
+	if oerr == nil {
+		postOut = s.getHookScriptResult("post_up")
+	}
+
+	// Yeah, there are better ways to do this.
+	retval := preOut + "\n" + string(out) + "\n" + postOut
+	return retval
 }
 
-func (s *Svn) SwitchTrunk() (*exec.Cmd) {
+func (s *Svn) SwitchTrunk() (string) {
 	if s.shouldAlwaysRevert() {
 		s.revertWorkingCopy()
 	}
+
+	preSw := s.getHookScriptResult("pre_sw")
 
 	cmd := exec.Command(s.getBinPath(), "sw", s.getRepositoryPath() + "/trunk")
 	cmd.Dir = s.getCheckoutPath()
-	return cmd
+
+	log.Printf("Starting switch to branch %s%s ...", "trunk")
+	out, oerr := cmd.CombinedOutput()
+	log.Print("Finished execution")
+
+	if oerr != nil {
+		log.Print("ERROR:")
+		log.Panic(oerr)
+	}
+
+	postSw := ""
+	if oerr == nil {
+		postSw = s.getHookScriptResult("post_sw")
+	}
+
+	retval := preSw + "\n" + string(out) + "\n" + postSw
+	return retval
 }
 
-func (s *Svn) SwitchBranch(branchName string) (*exec.Cmd) {
+func (s *Svn) SwitchBranch(branchName string) (string) {
 	if s.shouldAlwaysRevert() {
 		s.revertWorkingCopy()
 	}
+
+	preSw := s.getHookScriptResult("pre_sw")
 
 	log.Printf("%s %s %s", s.getBinPath(), "sw", s.getRepositoryPath() + "/branches/" + branchName)
 	cmd := exec.Command(s.getBinPath(), "sw", s.getRepositoryPath() + "/branches/" + branchName)
 	cmd.Dir = s.getCheckoutPath()
-	return cmd
+
+	log.Printf("Starting switch to branch %s ...", branchName)
+	out, oerr := cmd.CombinedOutput()
+	log.Print("Finished execution")
+
+	if oerr != nil {
+		log.Print("ERROR:")
+		log.Panic(oerr)
+	}
+
+	postSw := ""
+	if oerr == nil {
+		postSw = s.getHookScriptResult("post_sw")
+	}
+
+	retval := preSw + "\n" + string(out) + "\n" + postSw
+	return retval
 }
 
-func (s *Svn) SwitchTag(tagName string) (*exec.Cmd) {
+func (s *Svn) SwitchTag(tagName string) (string) {
 	if s.shouldAlwaysRevert() {
 		s.revertWorkingCopy()
 	}
 
+	preSw := s.getHookScriptResult("pre_sw")
+
 	cmd := exec.Command(s.getBinPath(), "sw", s.getRepositoryPath() + "/tags/" + tagName)
 	cmd.Dir = s.getCheckoutPath()
-	return cmd
+
+	log.Printf("Starting switch to tag %s ...", tagName)
+	out, oerr := cmd.CombinedOutput()
+	log.Print("Finished execution")
+
+	if oerr != nil {
+		log.Print("ERROR:")
+		log.Panic(oerr)
+	}
+
+	postSw := ""
+	if oerr == nil {
+		postSw = s.getHookScriptResult("post_sw")
+	}
+
+	retval := preSw + "\n" + string(out) + "\n" + postSw
+	return retval
 }
 
 func (s *Svn) getRemoteDirList(pathInRepo string) ([]string) {

@@ -10,13 +10,10 @@ package web
 import "io/ioutil"
 import "net/http"
 import "fmt"
-import "strings"
 import "github.com/kless/goconfig/config"
 import "svn"
 import "log"
-import "os/exec"
 import "encoding/json"
-
 
 type PageManager struct {
 	Config *config.Config
@@ -27,14 +24,11 @@ type Page struct {
 	Body  []byte
 }
 
-func (p *Page) ReplaceVar(key string, value string) {
-	copy(p.Body[:], strings.Replace(string(p.Body), key, value, -1))
-}
-
 func (pm *PageManager) StartServer(config *config.Config) {
 	pm.Config = config
 	port, _ := pm.Config.String("DAEMON","port")
 
+	log.Print("Starting server")
 
 	svnHandle := new(svn.Svn)
 	svnHandle.Config = config
@@ -62,11 +56,12 @@ func (pm *PageManager) StartServer(config *config.Config) {
 		})
 
 	http.HandleFunc("/switch", func(w http.ResponseWriter, r *http.Request) {
-			var cmd *exec.Cmd
+			var cmd string
 
 			branchName := r.URL.Query().Get("branch")
 			tagName := r.URL.Query().Get("tag")
 
+			// Crazy comparison to prevent empty string allocation
 			if branchName + "FOOBAR" != "FOOBAR" {
 				if branchName == "trunk" {
 					log.Print("Choosing trunk")
@@ -84,32 +79,14 @@ func (pm *PageManager) StartServer(config *config.Config) {
 				cmd = svnHandle.SwitchTag(tagName)
 			}
 
-			log.Print("Starting execution ...")
-			out, oerr := cmd.CombinedOutput()
-			log.Print("Finished execution")
-
-			if oerr != nil {
-				log.Print("ERROR:")
-				log.Panic(oerr)
-			}
 			w.Header().Set("Content-Type", "text/plain")
-			w.Write(out)
+			w.Write([]byte(cmd))
 		})
 
 	http.HandleFunc("/update", func(w http.ResponseWriter, r *http.Request) {
-
-			cmd := svnHandle.UpdateWorkingCopy()
-
-			log.Print("Starting execution ...")
-			out, oerr := cmd.CombinedOutput()
-			log.Print("Finished execution")
-
-			if oerr != nil {
-				log.Print("ERROR:")
-				log.Panic(oerr)
-			}
+			output := svnHandle.UpdateWorkingCopy()
 			w.Header().Set("Content-Type", "text/plain")
-			w.Write(out)
+			w.Write([]byte(output))
 		})
 
 	http.HandleFunc("/list/tags", func(w http.ResponseWriter, r *http.Request) {
@@ -126,6 +103,7 @@ func (pm *PageManager) StartServer(config *config.Config) {
 			encoder.Encode(tags)
 		})
 
+	log.Print("Server port set to " + port)
 	http.ListenAndServe(":" + port, nil)
 }
 
