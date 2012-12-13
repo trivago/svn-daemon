@@ -6,3 +6,11 @@ manage some of our dev servers.
 
 ## Installation
 You will need a go compiler as long as I do not provide any downloads (sorry).
+
+```
+cd src
+go build
+mv src svn-daemon
+chmod +x svn-daemon
+./svn-daemon --config /path/to/config
+```
