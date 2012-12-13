@@ -39,12 +39,9 @@ func (pm *PageManager) StartServer(config *config.Config) {
 			fmt.Fprintf(w, string(p.Body))
 		})
 
+	// TODO: Refactor and move the main logic into the svn module
 	http.HandleFunc("/info", func(w http.ResponseWriter, r *http.Request) {
 			cmd := svnHandle.SvnLocalInfo()
-
-			log.Print("Running command...")
-
-			log.Print("Finished command")
 			out, oerr := cmd.CombinedOutput()
 
 			if oerr != nil {
@@ -64,21 +61,16 @@ func (pm *PageManager) StartServer(config *config.Config) {
 			// Crazy comparison to prevent empty string allocation
 			if branchName + "FOOBAR" != "FOOBAR" {
 				if branchName == "trunk" {
-					log.Print("Choosing trunk")
 					cmd = svnHandle.SwitchTrunk()
 				}
 
 				if branchName != "trunk" {
-					log.Print("Choosing branch " + branchName)
 					cmd = svnHandle.SwitchBranch(branchName)
 				}
 			}
-
 			if tagName + "FOOBAR" != "FOOBAR" {
-				log.Print("Choosing tag " + tagName)
 				cmd = svnHandle.SwitchTag(tagName)
 			}
-
 			w.Header().Set("Content-Type", "text/plain")
 			w.Write([]byte(cmd))
 		})
@@ -102,8 +94,6 @@ func (pm *PageManager) StartServer(config *config.Config) {
 			w.Header().Set("Content-Type", "application/json")
 			encoder.Encode(tags)
 		})
-
-	log.Print("Server port set to " + port)
 	http.ListenAndServe(":" + port, nil)
 }
 

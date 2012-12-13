@@ -1,0 +1,30 @@
+# Default replacements
+# anything you define here can be used
+# with %(foo)s later on.
+# Example:
+#
+# [DEFAULT]
+# foo: bar
+#
+# [BAZ]
+# buz: %(foo)/quack
+#
+# Results to $buz being "bar/quack"
+[DEFAULT]
+bin_base: /usr
+
+[DAEMON]
+port: 8001
+static_path: /Users/mario/Dev/Source/SVN-Daemon/src/static_content
+
+[SVN]
+binpath: %(bin_base)s/bin/svn
+checkout: /Users/mario/Dev/Source/daemoncheckout
+repository: svn+ssh://mmueller@10.1.1.50/appdata/svn/repos/trivagophp/orchestra
+
+[CMD]
+always_revert_first: on
+post_sw:
+pre_sw:
+post_up:
+pre_up:

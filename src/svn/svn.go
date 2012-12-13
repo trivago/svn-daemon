@@ -13,7 +13,6 @@ type Svn struct {
 
 func (s *Svn) getHookScriptResult(hookname string) (string) {
 	val, _ := s.Config.String("CMD", hookname)
-
 	if val + "FOOBAR" == "FOOBAR" {
 		return ""
 	}
@@ -21,7 +20,6 @@ func (s *Svn) getHookScriptResult(hookname string) (string) {
 	workdir, _ := s.Config.String("SVN", "checkout")
 	cmd := exec.Command(val)
 	cmd.Dir = workdir
-
 	out, err := cmd.CombinedOutput()
 
 	if err != nil {
@@ -70,13 +68,9 @@ func (s *Svn) UpdateWorkingCopy() (string) {
 	}
 
 	preOut := s.getHookScriptResult("pre_up")
-
 	cmd := exec.Command(s.getBinPath(), "up")
 	cmd.Dir = s.getCheckoutPath()
-
-	log.Print("Updating working copy")
 	out, oerr := cmd.CombinedOutput()
-	log.Print("Finished execution")
 
 	if oerr != nil {
 		log.Print("ERROR:")
@@ -99,16 +93,11 @@ func (s *Svn) SwitchTrunk() (string) {
 	}
 
 	preSw := s.getHookScriptResult("pre_sw")
-
 	cmd := exec.Command(s.getBinPath(), "sw", s.getRepositoryPath() + "/trunk")
 	cmd.Dir = s.getCheckoutPath()
-
-	log.Printf("Starting switch to branch %s%s ...", "trunk")
 	out, oerr := cmd.CombinedOutput()
-	log.Print("Finished execution")
 
 	if oerr != nil {
-		log.Print("ERROR:")
 		log.Panic(oerr)
 	}
 
@@ -127,17 +116,12 @@ func (s *Svn) SwitchBranch(branchName string) (string) {
 	}
 
 	preSw := s.getHookScriptResult("pre_sw")
-
-	log.Printf("%s %s %s", s.getBinPath(), "sw", s.getRepositoryPath() + "/branches/" + branchName)
 	cmd := exec.Command(s.getBinPath(), "sw", s.getRepositoryPath() + "/branches/" + branchName)
 	cmd.Dir = s.getCheckoutPath()
 
-	log.Printf("Starting switch to branch %s ...", branchName)
 	out, oerr := cmd.CombinedOutput()
-	log.Print("Finished execution")
 
 	if oerr != nil {
-		log.Print("ERROR:")
 		log.Panic(oerr)
 	}
 
@@ -156,16 +140,11 @@ func (s *Svn) SwitchTag(tagName string) (string) {
 	}
 
 	preSw := s.getHookScriptResult("pre_sw")
-
 	cmd := exec.Command(s.getBinPath(), "sw", s.getRepositoryPath() + "/tags/" + tagName)
 	cmd.Dir = s.getCheckoutPath()
-
-	log.Printf("Starting switch to tag %s ...", tagName)
 	out, oerr := cmd.CombinedOutput()
-	log.Print("Finished execution")
 
 	if oerr != nil {
-		log.Print("ERROR:")
 		log.Panic(oerr)
 	}
 
