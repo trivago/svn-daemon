@@ -11,7 +11,7 @@ import "io/ioutil"
 import "net/http"
 import "fmt"
 import "github.com/kless/goconfig/config"
-import "svn"
+import "../svn"
 import "log"
 import "encoding/json"
 

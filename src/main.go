@@ -3,9 +3,9 @@ package main
 import (
 	"flag"
 	"github.com/kless/goconfig/config"
-	"web"
-	"os"
 	"log"
+	"os"
+	"./web"
 )
 
 var configPath = flag.String("config", "config.cfg", "config file to use")
