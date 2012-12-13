@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style type="text/css">
+        body {
+            padding-top: 60px;
+            padding-bottom: 40px;
+        }
+        .sidebar-nav {
+            padding: 9px 0;
+        }
+    </style>
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/bootswatch/2.1.1/spacelab/bootstrap.min.css" rel="stylesheet">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+</head>
+<body lang="en">
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container-fluid">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </a>
+            <a class="brand" href="#">SVN Daemon</a>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span2">
+            <div class="well sidebar-nav">
+                <ul class="nav nav-list">
+                    <li class="nav-header">Checkout Actions</li>
+                    <li><button class="btn btn-info size-medium" style="cursor: pointer" id="triggerShowUpdateBranch">Update current</button></li>
+                    <li><a id="triggerShowSwitchBranch" style="cursor: pointer">Switch branch</a></li>
+
+                    <li class="nav-header">Other Actions</li>
+                    <li><a href="javascript:void(0);" id="add-your-own">add-your-own</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="span10">
+            <div class="row">
+                <span class="span12">
+                    <h2>Actual working copy</h2>
+                    <pre id="showSvnInfo">
+
+                    </pre>
+                </span>
+            </div>
+            <div class="row">
+                <div class="span12">
+                    <div id="showSwitchBranch" style="display: none">
+                        <hr/>
+                        <div class="row-fluid">
+                            <div class="span4">
+                                <form class="form" onsubmit="return false;">
+                                    <fieldset>
+                                        <button id="switchTrunk" class="btn btn-info">Switch to trunk</button>
+                                    </fieldset>
+                                </form>
+                            </div>
+                            <div class="span4">
+                                <form class="form" onsubmit="return false;">
+                                    <fieldset>
+                                        <label for="branches">Branch: </label>
+                                        <input type="text" id="branches"/>
+                                        <button class="btn" id="switchBranch">Switch</button>
+                                    </fieldset>
+                                </form>
+                            </div>
+                            <div class="span4">
+                                <form class="form" onsubmit="return false;">
+                                    <fieldset>
+                                        <label for="tags">Tag: </label>
+                                        <input type="text" id="tags"/>
+                                        <button class="btn" id="switchTag">Switch</button>
+                                    </fieldset>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <hr/>
+                <div class="span12 well">
+                    <img style="display:none" class="pull-right" src="http://il1.trivago.com/images/layoutimages/osp/loader_on_white_nb_big.gif" id="wait" /><br/>
+                    <pre id="console"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#switchTrunk').on('click', function(e) {$.get('/switch?branch=trunk', function(data){$('#console').text(data)});});
+        $('#switchTag').on('click', function(e) {$.get('/switch?tag=' + $('#tags').val(), function(data){$('#console').text(data)});});
+        $('#switchBranch').on('click', function(e) {$.get('/switch?branch=' + $('#branches').val(), function(data){$('#console').text(data)});});
+
+        $('#triggerShowUpdateBranch').on('click', function() {
+            $('#showSwitchBranch').fadeOut('fast');
+            $.get('/update', function(data){$('#console').text(data)});
+        });
+
+        $('#triggerShowSwitchBranch').on('click', function(){
+            $('#showSwitchBranch').fadeIn('fast');
+        });
+
+        $.get('/info', function(data){$('#showSvnInfo').text(data)});
+        $.getJSON('/list/branches', function(data){$('#branches').typeahead({source: data});});
+        $.getJSON('/list/tags', function(data){$('#tags').typeahead({source: data});});
+
+        $('#wait').ajaxStart(function() {$('button').attr('disabled', true);$(this).show();}).ajaxComplete(function(){$('button').attr('disabled', false);$(this).hide();});
+
+    });
+</script>
+</body>
+</html>
