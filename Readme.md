@@ -4,6 +4,10 @@
 SVN Daemon is a small web based tool that can manipulate a svn checkout. We use it at trivago to
 manage some of our dev servers.
 
+## License
+[Read the license here](http://creativecommons.org/licenses/by-sa/3.0/)
+![license](http://i.creativecommons.org/l/by-sa/3.0/88x31.png)
+
 ## Installation
 You will need a go compiler as long as I do not provide any downloads (sorry).
 
