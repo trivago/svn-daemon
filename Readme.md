@@ -27,4 +27,4 @@ chmod +x svn-daemon
 * four hooks configurable: pre_up, post_up, pre_sw, post_sw
 
 ## Screenshot
-[[https://dl.dropbox.com/u/230202/projects/svn-daemon/view1.png]]
+![screenshot](https://dl.dropbox.com/u/230202/projects/svn-daemon/view1.png)
