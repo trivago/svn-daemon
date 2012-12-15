@@ -5,7 +5,7 @@ import (
 	"github.com/kless/goconfig/config"
 	"log"
 	"os"
-	"web"
+	"github.com/xenji/svn-daemon/ui"
 )
 
 var configPath = flag.String("config", "config.cfg", "config file to use")
@@ -17,6 +17,6 @@ func main() {
 		log.Fatal(err)
 		os.Exit(-1)
 	}
-	pm := new(web.PageManager)
+	pm := new(ui.PageManager)
 	pm.StartServer(c)
 }

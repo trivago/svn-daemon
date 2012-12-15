@@ -1,4 +1,4 @@
-package main
+package vcs
 
 import "github.com/kless/goconfig/config"
 import "os/exec"

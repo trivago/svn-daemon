@@ -5,15 +5,15 @@
  * Time: 10:44
  * To change this template use File | Settings | File Templates.
  */
-package main
+package ui
 
 import "io/ioutil"
 import "net/http"
 import "fmt"
 import "github.com/kless/goconfig/config"
-import "svn"
 import "log"
 import "encoding/json"
+import "github.com/xenji/svn-daemon/vcs"
 
 type PageManager struct {
 	Config *config.Config
@@ -30,7 +30,7 @@ func (pm *PageManager) StartServer(config *config.Config) {
 
 	log.Print("Starting server")
 
-	svnHandle := new(svn.Svn)
+	svnHandle := new(vcs.Svn)
 	svnHandle.Config = config
 
 	http.HandleFunc("/", func (w http.ResponseWriter, r *http.Request) {
