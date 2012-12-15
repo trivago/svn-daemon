@@ -5,7 +5,7 @@ import (
 	"github.com/kless/goconfig/config"
 	"log"
 	"os"
-	"./web"
+	"web"
 )
 
 var configPath = flag.String("config", "config.cfg", "config file to use")

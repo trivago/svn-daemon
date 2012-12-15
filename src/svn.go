@@ -1,4 +1,4 @@
-package svn
+package main
 
 import "github.com/kless/goconfig/config"
 import "os/exec"

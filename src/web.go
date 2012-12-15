@@ -5,13 +5,13 @@
  * Time: 10:44
  * To change this template use File | Settings | File Templates.
  */
-package web
+package main
 
 import "io/ioutil"
 import "net/http"
 import "fmt"
 import "github.com/kless/goconfig/config"
-import "../svn"
+import "svn"
 import "log"
 import "encoding/json"
 
