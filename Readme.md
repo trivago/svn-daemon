@@ -6,7 +6,11 @@ manage some of our dev servers.
 
 ## License
 [Read the license here](http://creativecommons.org/licenses/by-sa/3.0/)
+
 ![license](http://i.creativecommons.org/l/by-sa/3.0/88x31.png)
+
+## CI
+[![Build Status](https://travis-ci.org/xenji/svn-daemon.png?branch=master)](https://travis-ci.org/xenji/svn-daemon)
 
 ## Installation
 You will need a go compiler as long as I do not provide any downloads (sorry).
